@@ -6,7 +6,6 @@ class Pokemon(models.Model):
     name = models.CharField(max_length=40)
     order = models.IntegerField()
     base_experience = models.PositiveIntegerField()
-    is_shiny = models.BooleanField()
     stats = models.JSONField(default=list)
     type = models.ManyToManyField('Poketype', related_name='pokemon')
 
@@ -35,6 +34,7 @@ class Pokecard(models.Model):
 
     owner = models.ForeignKey(CustomUser, related_name='owner', on_delete=models.CASCADE)
     pokemon = models.ForeignKey('Pokemon', related_name='pokemon', on_delete=models.CASCADE)
+    is_shiny = models.BooleanField()
     rarity = models.CharField(max_length=30, choices=RarityChoices.choices)
     border_style = models.CharField(max_length=30, choices=BorderStyleChoices, default=BorderStyleChoices.BASIC)
     created_at = models.DateTimeField(auto_now_add=True)

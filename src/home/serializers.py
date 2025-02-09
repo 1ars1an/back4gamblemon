@@ -13,7 +13,7 @@ class PokemonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pokemon
         fields = ["poke_id", "name", "order", "base_experience", 
-        "is_shiny", "stats", "type", "type_ids"]
+        "stats", "type", "type_ids"]
 
     def create(self, validated_data):
         type_ids = validated_data.pop('type_ids', [])
@@ -26,10 +26,20 @@ class PokeCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pokecard
-        fields = ['owner', 'pokemon', 'rarity', 'border_style']
+        fields = ['owner', 'pokemon', 'is_shiny', 'rarity', 'border_style']
 
     def create(self, validated_data):
-        pokemon_data = validated_data.pop('pokemon') # Pop the nested pokemon data
-        pokemon = PokemonSerializer.create(PokemonSerializer(), validated_data=pokemon_data) # Create or update Pokemon
-        pokecard = Pokecard.objects.create(pokemon=pokemon, **validated_data) # Create Pokecard
+        pokemon_data = validated_data.pop('pokemon')
+
+        # Check if Pokémon already exists
+        pokemon = Pokemon.objects.filter(poke_id=pokemon_data["poke_id"]).first()
+
+        if not pokemon:
+            # Use the serializer to validate and create the Pokémon
+            pokemon_serializer = PokemonSerializer(data=pokemon_data)
+            pokemon_serializer.is_valid(raise_exception=True)
+            pokemon = pokemon_serializer.save()
+
+        # Now create the Pokecard
+        pokecard = Pokecard.objects.create(pokemon=pokemon, **validated_data)
         return pokecard

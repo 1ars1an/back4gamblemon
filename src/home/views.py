@@ -40,6 +40,15 @@ class CreatePokecardView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         data = get_pokemon()
 
+        is_shiny = random.random() < 0.029 #shiny chance (2.9%)
+
+        # Random Rarity and Border Style
+        rarity_choices = [choice[0] for choice in Pokecard.RarityChoices.choices]
+        rarity = random.choice(rarity_choices)
+
+        border_style_choices = [choice[0] for choice in Pokecard.BorderStyleChoices.choices]
+        border_style = random.choice(border_style_choices)
+
         # Transform the API data to match the serializer's expected format
         serializer_data = {
             "owner": request.user.id,
@@ -48,27 +57,19 @@ class CreatePokecardView(CreateAPIView):
                 "name": data['name'],
                 "order": data['order'],
                 "base_experience": data['base_experience'],
-                "is_shiny": False,
                 "stats": data['stats'],
                 "type_ids": [],
             },
-            "rarity": 'common',  # Get rarity from request data
-            "border_style": 'basic', # Get border style from request data
+            "is_shiny": is_shiny,
+            "rarity": rarity,  # Get rarity from request data
+            "border_style": border_style, # Get border style from request data
         }
 
-        for type_data in data['types']:
-            name = type_data['type']['name']
-            url = type_data['type']['url']
-            poketype = Poketype.objects.filter(name__iexact=name).first()
-            if poketype:
-                serializer_data['pokemon']['type_ids'].append(poketype.id)
-            else:
-                poketype_serializer = PokeTypeSerializer(data={"name": name, "url": url})
-                if poketype_serializer.is_valid():
-                    poketype = poketype_serializer.save()
-                    serializer_data['pokemon']['type_ids'].append(poketype.id)
-                else:
-                    print(poketype_serializer.errors)
+        for type_data in data["types"]:
+            name = type_data["type"]["name"]
+            url = type_data["type"]["url"]
+            poketype, _ = Poketype.objects.get_or_create(name__iexact=name, defaults={"name": name, "url": url})
+            serializer_data['pokemon']["type_ids"].append(poketype.id)
                     
         serializer = self.get_serializer(data=serializer_data)
         serializer.is_valid(raise_exception=True)

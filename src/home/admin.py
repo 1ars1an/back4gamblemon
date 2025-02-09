@@ -14,7 +14,7 @@ class PokecardInline(admin.TabularInline):  # Or admin.StackedInline
 
 @admin.register(Pokemon)
 class PokemonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'poke_id', 'order', 'base_experience', 'is_shiny')
+    list_display = ('name', 'poke_id', 'order', 'base_experience')
     # filter_horizontal = ('type',)  No longer needed with inline
     inlines = [PoketypeInline]  # Add the inline
     exclude = ('type',) # Exclude the original m2m field
@@ -25,7 +25,7 @@ class PoketypeAdmin(admin.ModelAdmin):
 
 @admin.register(Pokecard)
 class PokecardAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'pokemon', 'rarity', 'border_style', 'created_at')
+    list_display = ('owner', 'pokemon', 'is_shiny', 'rarity', 'border_style', 'created_at')
     search_fields = ('owner__username', 'pokemon__name')
     list_filter = ('rarity', 'border_style')
 
