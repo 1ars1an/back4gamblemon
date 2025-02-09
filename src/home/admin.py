@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Pokemon, Poketype, Pokecard
-from accounts.models import CustomUser  # Assuming CustomUser is in accounts.models
+from accounts.models import CustomUser
 
 # Inlines for Pokemon Types
 class PoketypeInline(admin.TabularInline):  # Or admin.StackedInline

@@ -21,8 +21,20 @@ class Poketype(models.Model):
         return self.name
 
 class Pokecard(models.Model):
+    class RarityChoices(models.TextChoices):
+        COMMON = 'common'
+        SILVER = 'silver'
+        GOLD = 'gold'
+        CNY = 'cny'
+        SAKURA = 'sakura'
+
+    class BorderStyleChoices(models.TextChoices):
+        BASIC = 'basic'
+        GLITTER = 'glitter'
+        GLITCH = 'glitch'
+
     owner = models.ForeignKey(CustomUser, related_name='owner', on_delete=models.CASCADE)
     pokemon = models.ForeignKey('Pokemon', related_name='pokemon', on_delete=models.CASCADE)
-    rarity = models.CharField(max_length=30)
-    border_style = models.CharField(max_length=30)
+    rarity = models.CharField(max_length=30, choices=RarityChoices.choices)
+    border_style = models.CharField(max_length=30, choices=BorderStyleChoices, default=BorderStyleChoices.BASIC)
     created_at = models.DateTimeField(auto_now_add=True)
