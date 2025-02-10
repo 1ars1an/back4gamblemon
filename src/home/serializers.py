@@ -17,6 +17,8 @@ class PokemonSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         type_ids = validated_data.pop('type_ids', [])
+        print(type_ids, 'in poke')
+        print(validated_data)
         pokemon = Pokemon.objects.create(**validated_data)
         pokemon.type.set(type_ids)
         return pokemon
@@ -30,6 +32,10 @@ class PokeCardSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         pokemon_data = validated_data.pop('pokemon')
+        
+        #we revert the type_ids back to id's after pokemon serializer converts them during validation
+        primitive_typedata = [typedata.id for typedata in pokemon_data['type_ids']]
+        pokemon_data['type_ids'] = primitive_typedata
 
         # Check if Pokémon already exists
         pokemon = Pokemon.objects.filter(poke_id=pokemon_data["poke_id"]).first()

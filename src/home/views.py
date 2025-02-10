@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
 
@@ -7,15 +7,9 @@ from accounts.models import CustomUser
 from home.models import Pokemon, Poketype, Pokecard
 from home.serializers import PokemonSerializer, PokeTypeSerializer, PokeCardSerializer
 
-import requests
-import json
-import random
+import requests, random, json
 
 POKEAPI_BASE_URL = "https://pokeapi.co/api/v2/pokemon/"
-
-class pokeView(APIView):
-    def get(self, request, format=None):
-        pass
 
 def get_pokemon():
     poke_id = random.randint(1, 1000)
@@ -70,6 +64,8 @@ class CreatePokecardView(CreateAPIView):
             url = type_data["type"]["url"]
             poketype, _ = Poketype.objects.get_or_create(name__iexact=name, defaults={"name": name, "url": url})
             serializer_data['pokemon']["type_ids"].append(poketype.id)
+
+        print(serializer_data['pokemon']['type_ids'])
                     
         serializer = self.get_serializer(data=serializer_data)
         serializer.is_valid(raise_exception=True)
@@ -77,3 +73,6 @@ class CreatePokecardView(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+class DestroyPokecardView(DestroyAPIView):
+    queryset = Pokecard.objects.all()
+    serializer_class = PokeCardSerializer
