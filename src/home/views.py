@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from accounts.models import CustomUser
 from home.models import Pokemon, Poketype, Pokecard
@@ -23,9 +24,10 @@ class ListPokecardView(ListAPIView):
     queryset = Pokecard.objects.all()
     serializer_class = PokeCardSerializer
 
-class PokecardDetailView(RetrieveAPIView):
+class PokecardRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Pokecard.objects.all()
     serializer_class = PokeCardSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class CreatePokecardView(CreateAPIView):
     model = Pokecard
@@ -70,11 +72,3 @@ class CreatePokecardView(CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-class DestroyPokecardView(DestroyAPIView):
-    queryset = Pokecard.objects.all()
-    serializer_class = PokeCardSerializer
-
-class UpdatePokecardView(UpdateAPIView):
-    queryset = Pokecard.objects.all()
-    serializer_class = PokeCardSerializer
