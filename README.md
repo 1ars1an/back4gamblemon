@@ -16,6 +16,13 @@ initial steps: i wanna understand the workflow that goes behind this
 
 initial steps completed, now moving on to permissions and authentication
 
+- [x] added jwt authentication on backend
+
+### to do's
+
+- [] setup filtering for cleaner api access?
+- [] setup pagination to reduce payloads on cards especially
+
 ### notes
 
 ##### pokeAPI modeling

@@ -29,6 +29,9 @@ class PokeCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pokecard
         fields = ['owner', 'pokemon', 'is_shiny', 'rarity', 'border_style']
+        extra_kwargs = {
+            'user': {'read_only': True}
+        }
 
     def create(self, validated_data):
         pokemon_data = validated_data.pop('pokemon')
