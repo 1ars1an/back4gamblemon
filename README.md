@@ -13,3 +13,9 @@ initial steps: i wanna understand the workflow that goes behind this
 - [] setup my serializers
 - [] setup my views
 - [] setup my url configs
+
+### notes
+
+##### pokeAPI modeling
+
+- pokemon: id, order, name, base_experience, abilities, forms, moves, sprites, stats, types

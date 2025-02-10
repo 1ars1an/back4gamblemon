@@ -12,6 +12,13 @@ class Pokemon(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def get_sprite_url(self):
+        return {
+            'front': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{self.poke_id}.png",
+            'front_shiny': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/{self.poke_id}.png",
+        }
+
 class Poketype(models.Model):
     name = models.CharField(max_length=20)
     url = models.TextField()

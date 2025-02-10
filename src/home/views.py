@@ -46,7 +46,7 @@ class CreatePokecardView(CreateAPIView):
         # Transform the API data to match the serializer's expected format
         serializer_data = {
             "owner": request.user.id,
-            "pokemon": { # Nested Pokemon data
+            "pokemon": {
                 "poke_id": data['id'],
                 "name": data['name'],
                 "order": data['order'],
@@ -55,8 +55,8 @@ class CreatePokecardView(CreateAPIView):
                 "type_ids": [],
             },
             "is_shiny": is_shiny,
-            "rarity": rarity,  # Get rarity from request data
-            "border_style": border_style, # Get border style from request data
+            "rarity": rarity,
+            "border_style": border_style,
         }
 
         for type_data in data["types"]:
@@ -64,8 +64,6 @@ class CreatePokecardView(CreateAPIView):
             url = type_data["type"]["url"]
             poketype, _ = Poketype.objects.get_or_create(name__iexact=name, defaults={"name": name, "url": url})
             serializer_data['pokemon']["type_ids"].append(poketype.id)
-
-        print(serializer_data['pokemon']['type_ids'])
                     
         serializer = self.get_serializer(data=serializer_data)
         serializer.is_valid(raise_exception=True)

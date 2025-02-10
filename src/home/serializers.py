@@ -13,12 +13,12 @@ class PokemonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pokemon
         fields = ["poke_id", "name", "order", "base_experience", 
-        "stats", "type", "type_ids"]
+        "stats", "type", "type_ids", "get_sprite_url"]
 
     def create(self, validated_data):
+        #when pokemon serializer is called again in if block, validation again converts
+        #primarykeyrelated to their model objects
         type_ids = validated_data.pop('type_ids', [])
-        print(type_ids, 'in poke')
-        print(validated_data)
         pokemon = Pokemon.objects.create(**validated_data)
         pokemon.type.set(type_ids)
         return pokemon
@@ -34,6 +34,7 @@ class PokeCardSerializer(serializers.ModelSerializer):
         pokemon_data = validated_data.pop('pokemon')
         
         #we revert the type_ids back to id's after pokemon serializer converts them during validation
+        #during the pokecard serializer call
         primitive_typedata = [typedata.id for typedata in pokemon_data['type_ids']]
         pokemon_data['type_ids'] = primitive_typedata
 
