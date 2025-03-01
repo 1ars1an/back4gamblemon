@@ -1,8 +1,9 @@
 from .serializers import CustomUserSerializer
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.views import APIView
 from .models import CustomUser
 
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
@@ -19,6 +20,21 @@ class ListAllUser(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [IsAdminUser]
+
+class LogoutUser(APIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        api_response = Response({'success': True}, status=200)
+        try:
+            api_response.delete_cookie('access_token')
+            api_response.delete_cookie('refresh_token')
+
+        except:
+            api_response = Response({'success': False}, status=400)
+
+        return api_response
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
@@ -51,7 +67,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             mutable_data = request.data.copy()
             mutable_data['refresh'] = refresh_token
 
-            #
+            # Manually override request._full_data (works because DRF caches request.data), effectively changing what request.data returns
             request._full_data = mutable_data
             response = super().post(request, *args, **kwargs)
 
