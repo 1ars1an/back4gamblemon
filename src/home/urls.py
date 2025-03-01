@@ -6,4 +6,3 @@ urlpatterns = [
     path('cards/<int:pk>', PokecardRetrieveUpdateDeleteView.as_view(), name='getdelupdate-pokemon'),
     path('cards/create/', CreatePokecardView.as_view(), name='create-card'),
 ]
-
