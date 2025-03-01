@@ -1,5 +1,6 @@
 from .serializers import CustomUserSerializer
 from rest_framework.permissions import IsAdminUser
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from .models import CustomUser
@@ -22,12 +23,14 @@ class ListAllUser(ListAPIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         api_response = Response()
-        try:
+        try:    
             response = super().post(request, *args, **kwargs)
             tokens = response.data
 
             access_token = tokens['access']
             refresh_token = tokens['refresh']
+
+            print(access_token, refresh_token, 'aha')
 
             api_response.data = {'success': True}
 
@@ -38,4 +41,29 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         return api_response
 
 class CustomTokenRefreshView(TokenRefreshView):
-    pass
+    def post(self, request, *args, **kwargs):
+        api_response = Response()
+        try:
+            refresh_token = request.COOKIES.get('refresh_token')
+            #request.data['refresh'] = refresh_token - Error: This QueryDict instance is immutable
+            
+            # Make a mutable copy of request.data
+            mutable_data = request.data.copy()
+            mutable_data['refresh'] = refresh_token
+
+            #
+            request._full_data = mutable_data
+            response = super().post(request, *args, **kwargs)
+
+            tokens = response.data
+            access_token = tokens['access']
+            print(access_token, 'access')
+            api_response.data = {'refreshed': True}
+
+            api_response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='None', path='/')
+        
+        except Exception as e:
+            print("Error:", e)
+            api_response.data = {'refreshed': False}
+
+        return api_response
