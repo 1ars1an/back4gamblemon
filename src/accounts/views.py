@@ -1,5 +1,5 @@
 from .serializers import CustomUserSerializer
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -16,6 +16,7 @@ class GetUpdateDeleteUser(RetrieveUpdateDestroyAPIView):
 class CreateUser(CreateAPIView):
     model = CustomUser
     serializer_class = CustomUserSerializer
+    authentication_classes = []  # Disable authentication
 
 class ListAllUser(ListAPIView):
     queryset = CustomUser.objects.all()
