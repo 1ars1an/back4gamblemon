@@ -8,7 +8,6 @@ class CookiesJWTAuthentication(JWTAuthentication):
             return None
 
         validated_token = self.get_validated_token(access_token)
-        print(validated_token)
         try:
             user = self.get_user(validated_token)
         except:

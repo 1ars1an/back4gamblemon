@@ -17,6 +17,7 @@ initial steps: i wanna understand the workflow that goes behind this
 initial steps completed, now moving on to permissions and authentication
 
 - [x] added jwt authentication on backend
+- [x] extended jwt authentication to store tokens in cookies, made necessary changes to my token views as well
 
 ### to do's
 

@@ -1,5 +1,6 @@
 from .serializers import CustomUserSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
@@ -52,8 +53,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             api_response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='None', path='/')
             api_response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, samesite='None', path='/')
+            api_response.status_code = status.HTTP_200_OK
         except:
             api_response.data = {'success': False}
+            api_response.status_code = status.HTTP_400_BAD_REQUEST
+        print(api_response.status_code)
         return api_response
 
 class CustomTokenRefreshView(TokenRefreshView):
@@ -77,9 +81,11 @@ class CustomTokenRefreshView(TokenRefreshView):
             api_response.data = {'refreshed': True}
 
             api_response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='None', path='/')
-        
+            api_response.status_code = status.HTTP_200_OK
+
         except Exception as e:
             print("Error:", e)
             api_response.data = {'refreshed': False}
+            api_response.status_code = status.HTTP_400_BAD_REQUEST
 
         return api_response
