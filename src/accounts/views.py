@@ -25,16 +25,17 @@ class ListAllUser(ListAPIView):
 
 class LogoutUser(APIView):
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated]
+    authentication_classes = []
 
     def get(self, request):
         api_response = Response({'success': True}, status=200)
         try:
-            api_response.delete_cookie('access_token')
-            api_response.delete_cookie('refresh_token')
-
+            #some browsers ignore delete_cookie, but all browsers respect expiration dates, this forces browser to remove expired token
+            api_response.set_cookie('access_token', '', expires='Thu, 01 Jan 1970 00:00:00 GMT', path='/')
+            api_response.set_cookie('refresh_token', '', expires='Thu, 01 Jan 1970 00:00:00 GMT', path='/')
         except:
-            api_response = Response({'success': False}, status=400)
+            api_response.data = {'success': False}
+            api_response.status_code = status.HTTP_400_BAD_REQUEST
 
         return api_response
 
